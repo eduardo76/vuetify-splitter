@@ -1,13 +1,13 @@
 <template>
 
-  <div class="splitter h-100" v-resize="onResize">
-    <v-sheet id="panel1" tile class="d-flex split-block" :style="style_left">
+  <div class="splitter h-100" v-resize="onResize" :class="{'cursor-resize': active}">
+    <v-sheet ref="panel1" id="panel1" tile class="d-flex split-block" :style="panel_left">
       <slot name="panel1" v-bind:left="left"></slot>
     </v-sheet>
 
-    <div id="splitter" class="gutter" :class="{'active': active}" :style="'width: '+ this.gutterSize +'px'"></div>
+    <div ref="splitter" @mousedown="spMouseDown" id="splitter" class="gutter" :class="{'active': active}" :style="style_gutter"></div>
 
-    <v-sheet id="panel2" tile class="d-flex split-block" :style="style_right">
+    <v-sheet ref="panel2" id="panel2" tile class="d-flex split-block" :style="panel_right">
       <slot name="panel2" v-bind:right="right"></slot>
     </v-sheet>
   </div>
@@ -56,18 +56,18 @@
 
       init() {
         
-        this.splitter = document.getElementById("splitter");
-        this.panel1   = document.getElementById("panel1");
-        this.panel2   = document.getElementById("panel2");
+        this.splitter = this.$refs.splitter;
+        this.panel1   = this.$refs.panel1;
+        this.panel2   = this.$refs.panel2;
 
-        this.splitter.addEventListener("mousedown", this.spMouseDown);
+        // this.splitter.addEventListener("mousedown", this.spMouseDown);
 
         this.setPosition(this.value);
 
       },
 
       spMouseDown(event) {
-        this.splitter.removeEventListener("mousedown", this.spMouseDown);
+        // this.splitter.removeEventListener("mousedown", this.spMouseDown);
         window.addEventListener("mousemove", this.spMouseMove);
         window.addEventListener("mouseup", this.spMouseUp);
 
@@ -82,12 +82,12 @@
         
         document.body.classList.remove('noselect')
         this.active = false;
-        this.$emit('input', this.percentage);
       },
 
       spMouseMove(event) {
         if (event.clientX > this.minWidth) {
           this.setPosition(event.clientX);
+          this.$emit('input', event.clientX);
         }
       },
 
@@ -104,15 +104,28 @@
     },
 
     computed: {
-      style_left() {
+      panel_left() {
         return {
-          flexBasis: 'calc(' + this.left + '% - '+ this.gutterSize +'px)'
+          flexBasis: 'calc(' + this.left + '% - '+ this.gutterSize +'px)',
+          overflowY: 'auto',
+          height: "410px"
         }
       },
-      style_right() {
+      panel_right() {
         return {
           flexBasis: 'calc(' + this.right + '% - '+ this.gutterSize +'px)'
         }
+      },
+      style_gutter() {
+        return {
+          width: this.gutterSize +'px'
+        }
+      }
+    },
+
+    watch: {
+      value(newValue, oldValue) {
+        this.setPosition(newValue);
       }
     },
 
@@ -122,18 +135,18 @@
 <style scoped>
 
 .splitter {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 
 .h-100 {
@@ -141,45 +154,48 @@
 }
 
 .splitter > .split-block {
-    position: relc;
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-    -ms-flex-preferred-size: 0;
-    flex-basis: 0;
-    overflow: hidden;
+  position: relc;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+  overflow: hidden;
 }
 
 .splitter > .gutter {
-    -ms-flex-negative: 0;
-    flex-shrink: 0;
-    -webkit-box-flex: 0;
-    -ms-flex-positive: 0;
-    flex-grow: 0;
-    border: 1px solid #f8f8f8;
-    background-color: #f8f8f8;
-    cursor: col-resize;
-    z-index: 1;
-    position: relative;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-box-flex: 0;
+  -ms-flex-positive: 0;
+  flex-grow: 0;
+  border: 1px solid #f8f8f8;
+  background-color: #f8f8f8;
+  cursor: e-resize;
+  z-index: 1;
+  position: relative;
 }
-
 
 .splitter > .gutter.active  {
   background-color: #bebebe;
 }
 
 .splitter > .gutter::before {
-    content: "";
-    z-index: 1;
-    display: block;
-    position: absolute;
-    left: 0;
-    width: 100%;
-    top: 50%;
-    height: 24px;
-    margin-top: -100px;
-    background-color: #bebebe;
-    box-sizing: border-box;
+  content: "";
+  z-index: 1;
+  display: block;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 50%;
+  height: 24px;
+  margin-top: -100px;
+  background-color: #bebebe;
+  box-sizing: border-box;
+}
+
+.cursor-resize {
+  cursor: e-resize;
 }
 
 </style>

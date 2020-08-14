@@ -14,9 +14,9 @@
       </v-btn>
     </v-app-bar>
 
-    <v-content>
+    <v-main>
 
-      <splitter value="256" gutter-size="4" min-width="200">
+      <splitter gutter-size="4" min-width="200" v-model="position">
 
         <template v-slot:panel1>
           <v-card flat>
@@ -28,11 +28,12 @@
         <template v-slot:panel2="{ right }">
           <v-container id="blah">
             <h1>Panel2 - {{right}}</h1>
+            <h1>Panel2 - {{position}}</h1>
           </v-container>
         </template>
 
       </splitter>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
@@ -45,10 +46,29 @@ import VList from "@/components/VList.vue";
 export default {
   name: 'App',
 
+  data() {
+    return {
+      position: 400
+    }
+  },
+
   components: {
     Splitter,
     VTree,
     VList
+  },
+
+  mounted () {
+    let position = localStorage.getItem('SplitterPosition');
+    if (position) {
+      this.position = position;
+    }
+  },
+
+  watch: {
+    position(val, oldval) {
+      localStorage.setItem('SplitterPosition', val)
+    }
   },
 
 };
