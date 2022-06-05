@@ -5,7 +5,7 @@
       <slot name="panel1" v-bind:left="left"></slot>
     </div>
 
-    <div ref="splitter" @mousedown="spMouseDown" id="splitter" class="gutter" :class="{'active': active}" :style="style_gutter"></div>
+    <div v-if="!noGutter" ref="splitter" @mousedown="spMouseDown" id="splitter" class="gutter" :class="{'active': active}" :style="style_gutter"></div>
 
     <div ref="panel2" id="panel2" tile class="d-flex splitter-panels" :style="panel_right">
       <slot name="panel2" v-bind:right="right"></slot>
@@ -27,6 +27,11 @@
       gutterSize: {
         type: [Number, String],
         default: 10
+      },
+
+      noGutter: {
+        type: Boolean,
+        default: false
       },
 
       minWidth: {
@@ -105,15 +110,33 @@
 
     computed: {
       panel_left() {
+        this.gutterSize = parseInt(this.gutterSize);
+
+        if (this.noGutter) {
+          return {
+            flexBasis: this.left + '%',
+          }
+        }
+
         return {
           flexBasis: 'calc(' + this.left + '% - '+ this.gutterSize +'px)',
         }
       },
+      
       panel_right() {
+        this.gutterSize = parseInt(this.gutterSize);
+
+        if (this.noGutter) {
+          return {
+            flexBasis: this.right + '%',
+          }
+        }
+
         return {
           flexBasis: 'calc(' + this.right + '% - '+ this.gutterSize +'px)'
         }
       },
+      
       style_gutter() {
         return {
           width: this.gutterSize +'px'
