@@ -1,15 +1,15 @@
 <template>
 
-  <div class="splitter h-100" v-resize="onResize" :class="{'cursor-resize': active}">
-    <v-sheet ref="panel1" id="panel1" tile class="d-flex split-block" :style="panel_left">
+  <div class="splitter" v-resize="onResize" :class="{'cursor-resize': active}">
+    <div ref="panel1" id="panel1" tile class="d-flex splitter-panels" :style="panel_left">
       <slot name="panel1" v-bind:left="left"></slot>
-    </v-sheet>
+    </div>
 
     <div ref="splitter" @mousedown="spMouseDown" id="splitter" class="gutter" :class="{'active': active}" :style="style_gutter"></div>
 
-    <v-sheet ref="panel2" id="panel2" tile class="d-flex split-block" :style="panel_right">
+    <div ref="panel2" id="panel2" tile class="d-flex splitter-panels" :style="panel_right">
       <slot name="panel2" v-bind:right="right"></slot>
-    </v-sheet>
+    </div>
   </div>
 
 </template>
@@ -107,8 +107,6 @@
       panel_left() {
         return {
           flexBasis: 'calc(' + this.left + '% - '+ this.gutterSize +'px)',
-          overflowY: 'auto',
-          height: "410px"
         }
       },
       panel_right() {
@@ -135,69 +133,80 @@
 <style scoped>
 
 .splitter {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: row;
   flex-direction: row;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
+  height: 100%;
 }
 
-.h-100 {
-    height: 100% !important;
+.splitter > .splitter-panels {
+  flex: 0 1 auto;
+  overflow-y: auto;
+  min-height: 0px;
 }
 
-.splitter > .split-block {
-  position: relc;
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-  -ms-flex-preferred-size: 0;
-  flex-basis: 0;
-  overflow: hidden;
+.splitter > .splitter-panels:hover {
+  overflow-y: auto;
 }
 
 .splitter > .gutter {
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-box-flex: 0;
-  -ms-flex-positive: 0;
-  flex-grow: 0;
+  position: relative;
+  cursor: e-resize;
   border: 1px solid #f8f8f8;
   background-color: #f8f8f8;
-  cursor: e-resize;
+  flex-shrink: 0;
+  flex-grow: 0;
   z-index: 1;
-  position: relative;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .splitter > .gutter.active  {
   background-color: #bebebe;
 }
+.splitter > .gutter:hover {
+  background-color: #bebebe;
+}
 
-.splitter > .gutter::before {
+/* .splitter > .gutter::before {
   content: "";
-  z-index: 1;
-  display: block;
   position: absolute;
+  display: block;
   left: 0;
   width: 100%;
   top: 50%;
-  height: 24px;
+  height: 100px;
   margin-top: -100px;
   background-color: #bebebe;
   box-sizing: border-box;
-}
+  z-index: 1;
+  border-radius: 10px;
+} */
 
 .cursor-resize {
   cursor: e-resize;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 50px;
+  opacity: 0;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ececf0; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d0d0d9; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a9a9b1;
+}
 </style>
 
 <style>
